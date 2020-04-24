@@ -1,0 +1,40 @@
+language: minimal
+
+services: docker
+
+os:
+  - linux
+env:
+  - DOCKER_COMPOSE_VERSION=1.23.2
+  - BUILD_USER=false
+  - BUILD_FEED=false
+  - BUILD_FRONTEND=false
+
+before_install:
+  - docker -v && docker-compose -v
+  - sudo rm /usr/local/bin/docker-compose
+  - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
+  - chmod +x docker-compose
+  - sudo mv docker-compose /usr/local/bin
+  - curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
+  - chmod +x ./kubectl
+  - sudo mv ./kubectl /usr/local/bin/kubectl
+  - docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
+
+
+
+install:
+  - sh install.sh
+
+after_success:
+  - echo $BUILD_FEED
+  - echo $BUILD_USER
+  - echo $BUILD_FRONTEND
+  - sed -i -e 's|EKS_CA|'"${EKS_CA}"'|g' kubeconfig
+  - sed -i -e 's|EKS_CLUSTER_HOST|'"${EKS_CLUSTER_HOST}"'|g' kubeconfig
+  - sed -i -e 's|EKS_CLUSTER_NAME|'"${EKS_CLUSTER_NAME}"'|g' kubeconfig
+  - sed -i -e 's|EKS_CLUSTER_USER_NAME|'"${EKS_CLUSTER_USER_NAME}"'|g' kubeconfig
+  - sed -i -e 's|TOKEN|'"${TOKEN}"'|g' kubeconfig
+  - kubectl --kubeconfig ${TRAVIS_BUILD_DIR}/kubeconfig set image deployment/feed-v1 feed=mohinigonawala90/backend-feed:${TRAVIS_BUILD_NUMBER}
+  - kubectl --kubeconfig ${TRAVIS_BUILD_DIR}/kubeconfig set image deployment/user-v1 user=mohinigonawala90/backend-user:${TRAVIS_BUILD_NUMBER}
+  - kubectl --kubeconfig ${TRAVIS_BUILD_DIR}/kubeconfig set image deployment/frontend frontend=mohinigonawala90/frontend:${TRAVIS_BUILD_NUMBER}

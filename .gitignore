@@ -1,0 +1,10 @@
+node_modules
+.env
+.idea/
+*.iml
+
+secrets/*
+udacity-c3-deployment/kubconfig/aws-secret.yaml
+udacity-c3-deployment/kubconfig/env-configmap.yaml
+udacity-c3-deployment/kubconfig/env-secret.yaml
+.env

@@ -1,0 +1,301 @@
+
+##################################################################################################
+# Users service
+##################################################################################################
+apiVersion: v1
+kind: Service
+metadata:
+  name: user
+  labels:
+    app: user
+    service: user
+spec:
+  ports:
+    - port: 8080
+      name: http-web
+  selector:
+    app: user
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: myapp-user
+  labels:
+    account: user
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-v1
+  labels:
+    app: user
+    version: v1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: user
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: user
+        version: v1
+    spec:
+      serviceAccountName: myapp-user
+      containers:
+      - name: user
+        image: mohinigonawala90/backend-user:latest
+        imagePullPolicy: IfNotPresent
+        env:
+          - name: URL
+            valueFrom:
+              configMapKeyRef:
+                name: env-config
+                key: URL
+          - name: JWT_SECRET
+            valueFrom:
+              configMapKeyRef:
+                name: env-config
+                key: JWT_SECRET
+          - name: POSTGRESS_DB
+            valueFrom:
+              configMapKeyRef:
+                name: env-config
+                key: POSTGRESS_DB
+          - name: POSTGRESS_HOST
+            valueFrom:
+              configMapKeyRef:
+                name: env-config
+                key: POSTGRESS_HOST
+          - name: POSTGRESS_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: env-secret
+                key: POSTGRESS_PASSWORD
+          - name: POSTGRESS_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: env-secret
+                key: POSTGRESS_USERNAME
+        livenessProbe:
+          httpGet:
+            path: /api/v0/
+            port: 8080
+          initialDelaySeconds: 60
+          periodSeconds: 5
+        readinessProbe:
+          httpGet:
+            path: /api/v0/
+            port: 8080
+          initialDelaySeconds: 60
+          periodSeconds: 0
+---
+##################################################################################################
+# Feed service
+##################################################################################################
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: feed
+  labels:
+    app: feed
+    service: feed
+spec:
+  ports:
+    - port: 8080
+      name: http-web
+  selector:
+    app: feed
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: myapp-feed
+  labels:
+    account: feed
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: feed-v1
+  labels:
+    app: feed
+    version: v1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: feed
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: feed
+        version: v1
+    spec:
+      serviceAccountName: myapp-feed
+      containers:
+        - image: mohinigonawala90/backend-feed:v1.0.0
+          name: feed
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: URL
+              valueFrom:
+                configMapKeyRef:
+                  name: env-config
+                  key: URL
+            - name: AWS_BUCKET
+              valueFrom:
+                configMapKeyRef:
+                  name: env-config
+                  key: AWS_BUCKET
+            - name: AWS_PROFILE
+              valueFrom:
+                configMapKeyRef:
+                  name: env-config
+                  key: AWS_PROFILE
+            - name: AWS_REGION
+              valueFrom:
+                configMapKeyRef:
+                  name: env-config
+                  key: AWS_REGION
+            - name: JWT_SECRET
+              valueFrom:
+                configMapKeyRef:
+                  name: env-config
+                  key: JWT_SECRET
+            - name: POSTGRESS_DB
+              valueFrom:
+                configMapKeyRef:
+                  name: env-config
+                  key: POSTGRESS_DB
+            - name: POSTGRESS_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: env-config
+                  key: POSTGRESS_HOST
+            - name: POSTGRESS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: env-secret
+                  key: POSTGRESS_PASSWORD
+            - name: POSTGRESS_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: env-secret
+                  key: POSTGRESS_USERNAME
+          livenessProbe:
+            httpGet:
+              path: /api/v0/health
+              port: 8080
+            initialDelaySeconds: 60
+            periodSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /api/v0/probe
+              port: 8080
+            initialDelaySeconds: 60
+            periodSeconds: 0
+          volumeMounts:
+            - name: aws-secret
+              mountPath: "/root/.aws/"
+              readOnly: true
+      volumes:
+        - name: aws-secret
+          secret:
+            secretName: aws-secret
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: feed-v2
+  labels:
+    app: feed
+    version: v2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: feed
+      version: v2
+  template:
+    metadata:
+      labels:
+        app: feed
+        version: v2
+    spec:
+      serviceAccountName: myapp-feed
+      containers:
+        - image: mohinigonawala90/backend-feed:v2.0.0
+          name: feed
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: URL
+              valueFrom:
+                configMapKeyRef:
+                  name: env-config
+                  key: URL
+            - name: AWS_BUCKET
+              valueFrom:
+                configMapKeyRef:
+                  name: env-config
+                  key: AWS_BUCKET
+            - name: AWS_PROFILE
+              valueFrom:
+                configMapKeyRef:
+                  name: env-config
+                  key: AWS_PROFILE
+            - name: AWS_REGION
+              valueFrom:
+                configMapKeyRef:
+                  name: env-config
+                  key: AWS_REGION
+            - name: JWT_SECRET
+              valueFrom:
+                configMapKeyRef:
+                  name: env-config
+                  key: JWT_SECRET
+            - name: POSTGRESS_DB
+              valueFrom:
+                configMapKeyRef:
+                  name: env-config
+                  key: POSTGRESS_DB
+            - name: POSTGRESS_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: env-config
+                  key: POSTGRESS_HOST
+            - name: POSTGRESS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: env-secret
+                  key: POSTGRESS_PASSWORD
+            - name: POSTGRESS_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: env-secret
+                  key: POSTGRESS_USERNAME
+          livenessProbe:
+            httpGet:
+              path: /api/v0/health
+              port: 8080
+            initialDelaySeconds: 60
+            periodSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /api/v0/probe
+              port: 8080
+            initialDelaySeconds: 60
+            periodSeconds: 0
+          volumeMounts:
+            - name: aws-secret
+              mountPath: "/root/.aws/"
+              readOnly: true
+      volumes:
+        - name: aws-secret
+          secret:
+            secretName: aws-secret
+---
