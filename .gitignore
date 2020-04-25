@@ -12,3 +12,5 @@ cleanup
 /deployment/kubconfig/aws-secret.yaml
 /deployment/kubconfig/env-configmap.yaml
 /deployment/kubconfig/env-secret.yaml
+/item-service/www/controllers/v0/product/routes/product.router.js
+/item-service/www/controllers/v0/product/routes/product.router.js.map

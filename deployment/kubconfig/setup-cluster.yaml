@@ -24,7 +24,12 @@ vpc:
 
 nodeGroups:
   - name: ng-1
-    instanceType: t3.small
+    instanceType: t3.medium
     desiredCapacity: 2
     managed: true
     privateNetworking: false # if only 'Private' subnets are given, this must be enabled
+
+
+
+----
+  aws eks --region us-east-1 update-kubeconfig --name cluster-devlopt

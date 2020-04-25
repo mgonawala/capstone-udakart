@@ -5,7 +5,7 @@ import {getGetSignedUrl, getPutSignedUrl} from '../../../../aws';
 
 const router: Router = Router();
 
-
+// Health Check endpoint
 router.get('/healthz', async (req: Request, res: Response) => {
   console.log('Health Check');
   res.status(200).send('OK');
@@ -28,7 +28,6 @@ router.get('/', async (request: Request, response: Response) => {
 // Retrieve a Product Item by Id
 router.get('/:id', async (request: Request, response: Response) => {
   const {id} = request.params;
-  console.log('Id:', id);
   const item = await ProductItem.findByPk(id);
   if (item !== undefined) {
     item.imageUrl = getGetSignedUrl(item.id + '.jpg');
