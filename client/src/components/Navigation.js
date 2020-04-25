@@ -6,13 +6,14 @@ import {useAppContext} from "../lib/contextLib";
 
 export default function Navigation({  cartItems}) {
 
-    const {isAuthenticated,userHasAuthenticated,setAuthToken, setCartItems} = useAppContext();
+    const {isAuthenticated,userHasAuthenticated,setAuthToken, setCartItems, email} = useAppContext();
     const history = useHistory();
 
     async function handleLogout() {
         await userHasAuthenticated(false);
         await setCartItems([]);
         localStorage.removeItem('authToken');
+        localStorage.removeItem('email')
         localStorage.removeItem('cartItems');
         setAuthToken('');
         history.push('/login');
@@ -56,6 +57,10 @@ export default function Navigation({  cartItems}) {
                     </a>
                 </li>
               </LinkContainer>
+
+              <li className="nav-item">
+                  Hi ! {email}
+              </li>
             </>
             :
             <>

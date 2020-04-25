@@ -15,6 +15,7 @@ export default function App(){
   const [isAuthenticated, userHasAuthenticated] = useState(false);
   const [cartItems, setCartItems] = useState([]);
   const [authToken, setAuthToken] = useState();
+  const [email, setEmail] = useState();
 
   useEffect(() => {
     onLoad()
@@ -26,12 +27,14 @@ export default function App(){
     if(result){
       userHasAuthenticated(true);
       setAuthToken(localStorage.getItem('authToken'));
+      setEmail(localStorage.getItem('email'));
     }
     setIsAuthenticating(false);
   }
   function handleLogout() {
     userHasAuthenticated(false);
     localStorage.removeItem('authToken');
+    localStorage.removeItem('email');
     setAuthToken('');
     history.push('/login');
   }
@@ -41,7 +44,7 @@ export default function App(){
       <div className="App container">
 
 
-        <AppContext.Provider value={{isAuthenticated, userHasAuthenticated,authToken, setAuthToken, cartItems,setCartItems }}>
+        <AppContext.Provider value={{isAuthenticated, userHasAuthenticated,authToken, setAuthToken, cartItems,setCartItems, email, setEmail }}>
             <Navigation cartItems={cartItems}/>
         <Routes/>
         </AppContext.Provider>
