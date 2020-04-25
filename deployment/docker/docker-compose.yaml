@@ -20,14 +20,7 @@ services:
     env_file:
       - ../../item-service/.env
 
-  order:
-    build:
-      context: ../../order-service
-    image: mohinigonawala90/order:dev
-    volumes:
-      - $HOME/.aws:/root/.aws
-    env_file:
-      - ../../order-service/.env
+
 
   user:
     build:
@@ -41,8 +34,18 @@ services:
   client:
     build:
       context: ../../client
+      args:
+        - REACT_APP_USERS_SERVICE="localhost:80"
+        - REACT_APP_PRODUCTS_SERVICE="localhost:80"
     image: mohinigonawala90/client:dev
-    env_file:
-      - ../../client/.env
     ports:
       - "3000:80"
+
+  order:
+    build:
+      context: ../../order-service
+    image: mohinigonawala90/order:dev
+    volumes:
+      - $HOME/.aws:/root/.aws
+    env_file:
+      - ../../order-service/.env
