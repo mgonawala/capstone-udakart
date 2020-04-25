@@ -6,6 +6,11 @@ import {getGetSignedUrl, getPutSignedUrl} from '../../../../aws';
 const router: Router = Router();
 
 
+router.get('/healthz', async (req: Request, res: Response) => {
+  console.log('Health Check');
+  res.status(200).send('OK');
+});
+
 // Retrieve list of all items in the Catalogue
 router.get('/', async (request: Request, response: Response) => {
 

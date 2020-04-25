@@ -38,6 +38,8 @@ spec:
       version: v1
   template:
     metadata:
+      annotations:
+        sidecar.istio.io/inject: "false"
       labels:
         app: user
         version: v1
@@ -45,14 +47,29 @@ spec:
       serviceAccountName: myapp-user
       containers:
       - name: user
-        image: mohinigonawala90/backend-user:latest
-        imagePullPolicy: IfNotPresent
+        image: mohinigonawala90/user:dev
+        imagePullPolicy: Always
         env:
-          - name: URL
+          - name: AWS_PROFILE
+            valueFrom:
+              configMapKeyRef:
+                key: AWS_PROFILE
+                name: env-config
+          - name: AWS_REGION
+            valueFrom:
+              configMapKeyRef:
+                key: AWS_REGION
+                name: env-config
+          - name: AWS_BUCKET
+            valueFrom:
+              configMapKeyRef:
+                key: AWS_BUCKET
+                name: env-config
+          - name: PORT
             valueFrom:
               configMapKeyRef:
                 name: env-config
-                key: URL
+                key: USER_PORT
           - name: JWT_SECRET
             valueFrom:
               configMapKeyRef:
@@ -63,104 +80,113 @@ spec:
               configMapKeyRef:
                 name: env-config
                 key: POSTGRESS_DB
+          - name: SHOPPING_DB
+            valueFrom:
+              configMapKeyRef:
+                name: env-config
+                key: SHOPPING_DB
           - name: POSTGRESS_HOST
             valueFrom:
               configMapKeyRef:
                 name: env-config
                 key: POSTGRESS_HOST
           - name: POSTGRESS_PASSWORD
-            valueFrom:
-              secretKeyRef:
-                name: env-secret
-                key: POSTGRESS_PASSWORD
+            value: password
           - name: POSTGRESS_USERNAME
-            valueFrom:
-              secretKeyRef:
-                name: env-secret
-                key: POSTGRESS_USERNAME
+            value: master
         livenessProbe:
           httpGet:
-            path: /api/v0/
+            path: /api/v0/users/healthz
             port: 8080
-          initialDelaySeconds: 60
-          periodSeconds: 5
+          initialDelaySeconds: 120
+          periodSeconds: 10
         readinessProbe:
           httpGet:
-            path: /api/v0/
+            path: /api/v0/users/healthz
             port: 8080
-          initialDelaySeconds: 60
+          initialDelaySeconds: 120
           periodSeconds: 0
+        volumeMounts:
+          - name: aws-secret
+            mountPath: "/root/.aws/"
+            readOnly: true
+      volumes:
+        - name: aws-secret
+          secret:
+            secretName: aws-secret
 ---
 ##################################################################################################
-# Feed service
+# Item service
 ##################################################################################################
 
 apiVersion: v1
 kind: Service
 metadata:
-  name: feed
+  name: item
   labels:
-    app: feed
-    service: feed
+    app: item
+    service: item
 spec:
   ports:
     - port: 8080
       name: http-web
   selector:
-    app: feed
+    app: item
 ---
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: myapp-feed
+  name: myapp-item
   labels:
-    account: feed
+    account: item
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: feed-v1
+  name: item-v1
   labels:
-    app: feed
+    app: item
     version: v1
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: feed
+      app: item
       version: v1
   template:
     metadata:
+      annotations:
+        sidecar.istio.io/inject: "false"
       labels:
-        app: feed
+        app: item
         version: v1
     spec:
-      serviceAccountName: myapp-feed
+      serviceAccountName: myapp-item
       containers:
-        - image: mohinigonawala90/backend-feed:v1.0.0
-          name: feed
-          imagePullPolicy: IfNotPresent
+        - image: mohinigonawala90/item:dev
+          name: item
+          imagePullPolicy: Always
           env:
-            - name: URL
-              valueFrom:
-                configMapKeyRef:
-                  name: env-config
-                  key: URL
-            - name: AWS_BUCKET
-              valueFrom:
-                configMapKeyRef:
-                  name: env-config
-                  key: AWS_BUCKET
             - name: AWS_PROFILE
               valueFrom:
                 configMapKeyRef:
-                  name: env-config
                   key: AWS_PROFILE
+                  name: env-config
             - name: AWS_REGION
               valueFrom:
                 configMapKeyRef:
-                  name: env-config
                   key: AWS_REGION
+                  name: env-config
+            - name: AWS_BUCKET
+              valueFrom:
+                configMapKeyRef:
+                  key: AWS_BUCKET
+                  name: env-config
+            - name: PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: env-config
+                  key: ITEM_PORT
             - name: JWT_SECRET
               valueFrom:
                 configMapKeyRef:
@@ -171,33 +197,32 @@ spec:
                 configMapKeyRef:
                   name: env-config
                   key: POSTGRESS_DB
+            - name: SHOPPING_DB
+              valueFrom:
+                configMapKeyRef:
+                  name: env-config
+                  key: SHOPPING_DB
             - name: POSTGRESS_HOST
               valueFrom:
                 configMapKeyRef:
                   name: env-config
                   key: POSTGRESS_HOST
             - name: POSTGRESS_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: env-secret
-                  key: POSTGRESS_PASSWORD
+              value: password
             - name: POSTGRESS_USERNAME
-              valueFrom:
-                secretKeyRef:
-                  name: env-secret
-                  key: POSTGRESS_USERNAME
+              value: master
           livenessProbe:
             httpGet:
-              path: /api/v0/health
+              path: /api/v0/products/healthz
               port: 8080
-            initialDelaySeconds: 60
-            periodSeconds: 5
+            initialDelaySeconds: 120
+            periodSeconds: 10
           readinessProbe:
             httpGet:
-              path: /api/v0/probe
+              path: /api/v0/products/healthz
               port: 8080
-            initialDelaySeconds: 60
-            periodSeconds: 0
+            initialDelaySeconds: 120
+            periodSeconds: 10
           volumeMounts:
             - name: aws-secret
               mountPath: "/root/.aws/"
@@ -208,51 +233,76 @@ spec:
             secretName: aws-secret
 
 ---
+############ Order Service
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: order
+  labels:
+    app: order
+    service: order
+spec:
+  ports:
+    - port: 8080
+      name: http-web
+  selector:
+    app: order
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: myapp-order
+  labels:
+    account: order
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: feed-v2
+  name: order-v1
   labels:
-    app: feed
-    version: v2
+    app: order
+    version: v1
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: feed
-      version: v2
+      app: order
+      version: v1
   template:
     metadata:
+      annotations:
+        sidecar.istio.io/inject: "false"
       labels:
-        app: feed
-        version: v2
+        app: order
+        version: v1
     spec:
-      serviceAccountName: myapp-feed
+      serviceAccountName: myapp-order
       containers:
-        - image: mohinigonawala90/backend-feed:v2.0.0
-          name: feed
-          imagePullPolicy: IfNotPresent
+        - image: mohinigonawala90/order:dev
+          name: order
+          imagePullPolicy: Always
           env:
-            - name: URL
-              valueFrom:
-                configMapKeyRef:
-                  name: env-config
-                  key: URL
-            - name: AWS_BUCKET
-              valueFrom:
-                configMapKeyRef:
-                  name: env-config
-                  key: AWS_BUCKET
             - name: AWS_PROFILE
               valueFrom:
                 configMapKeyRef:
-                  name: env-config
                   key: AWS_PROFILE
+                  name: env-config
             - name: AWS_REGION
               valueFrom:
                 configMapKeyRef:
-                  name: env-config
                   key: AWS_REGION
+                  name: env-config
+            - name: AWS_BUCKET
+              valueFrom:
+                configMapKeyRef:
+                  key: AWS_BUCKET
+                  name: env-config
+            - name: PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: env-config
+                  key: ORDER_PORT
             - name: JWT_SECRET
               valueFrom:
                 configMapKeyRef:
@@ -263,33 +313,42 @@ spec:
                 configMapKeyRef:
                   name: env-config
                   key: POSTGRESS_DB
+            - name: SHOPPING_DB
+              valueFrom:
+                configMapKeyRef:
+                  name: env-config
+                  key: SHOPPING_DB
             - name: POSTGRESS_HOST
               valueFrom:
                 configMapKeyRef:
                   name: env-config
                   key: POSTGRESS_HOST
             - name: POSTGRESS_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: env-secret
-                  key: POSTGRESS_PASSWORD
+              value: password
             - name: POSTGRESS_USERNAME
+              value: master
+            - name: PRODUCTS_SERVICE
               valueFrom:
-                secretKeyRef:
-                  name: env-secret
-                  key: POSTGRESS_USERNAME
+                configMapKeyRef:
+                  key: PRODUCTS_SERVICE
+                  name: env-config
+            - name: USERS_SERVICE
+              valueFrom:
+                configMapKeyRef:
+                  key: USERS_SERVICE
+                  name: env-config
           livenessProbe:
             httpGet:
               path: /api/v0/health
               port: 8080
-            initialDelaySeconds: 60
-            periodSeconds: 5
+            initialDelaySeconds: 120
+            periodSeconds: 10
           readinessProbe:
             httpGet:
-              path: /api/v0/probe
+              path: /api/v0/health
               port: 8080
-            initialDelaySeconds: 60
-            periodSeconds: 0
+            initialDelaySeconds: 120
+            periodSeconds: 10
           volumeMounts:
             - name: aws-secret
               mountPath: "/root/.aws/"
@@ -298,4 +357,3 @@ spec:
         - name: aws-secret
           secret:
             secretName: aws-secret
----

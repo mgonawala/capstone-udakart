@@ -65,6 +65,11 @@ export async function requireAuth(req: Request, res: Response, next: NextFunctio
   });*/
 }
 
+router.get('/healthz', async (req: Request, res: Response) => {
+  console.log('Health Check');
+  res.status(200).send('OK');
+});
+
 // get all orders
 router.get('/',
     requireAuth,
