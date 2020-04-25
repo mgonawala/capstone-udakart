@@ -6,9 +6,6 @@ os:
   - linux
 env:
   - DOCKER_COMPOSE_VERSION=1.23.2
-  - BUILD_USER=false
-  - BUILD_FEED=false
-  - BUILD_FRONTEND=false
 
 before_install:
   - docker -v && docker-compose -v
@@ -27,9 +24,6 @@ install:
   - sh install.sh
 
 after_success:
-  - echo $BUILD_FEED
-  - echo $BUILD_USER
-  - echo $BUILD_FRONTEND
   - sed -i -e 's|EKS_CA|'"${EKS_CA}"'|g' kubeconfig
   - sed -i -e 's|EKS_CLUSTER_HOST|'"${EKS_CLUSTER_HOST}"'|g' kubeconfig
   - sed -i -e 's|EKS_CLUSTER_NAME|'"${EKS_CLUSTER_NAME}"'|g' kubeconfig

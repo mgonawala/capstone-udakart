@@ -1,0 +1,11 @@
+version: "3.3"
+services:
+  client:
+    build:
+      context: ../../client
+      args:
+        - REACT_APP_USERS_SERVICE="a8780c0375acc4b439cac40f783c3e62-111135518.us-east-1.elb.amazonaws.com"
+        - REACT_APP_PRODUCTS_SERVICE="a8780c0375acc4b439cac40f783c3e62-111135518.us-east-1.elb.amazonaws.com"
+    image: mohinigonawala90/client:cluster
+    ports:
+      - "3000:80"

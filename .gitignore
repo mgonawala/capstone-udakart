@@ -8,3 +8,9 @@ udacity-c3-deployment/kubconfig/aws-secret.yaml
 udacity-c3-deployment/kubconfig/env-configmap.yaml
 udacity-c3-deployment/kubconfig/env-secret.yaml
 .env
+cleanup
+/deployment/kubconfig/aws-secret.yaml
+/deployment/kubconfig/env-configmap.yaml
+/deployment/kubconfig/env-secret.yaml
+/item-service/www/controllers/v0/product/routes/product.router.js
+/item-service/www/controllers/v0/product/routes/product.router.js.map

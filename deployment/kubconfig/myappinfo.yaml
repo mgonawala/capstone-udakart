@@ -1,0 +1,359 @@
+
+##################################################################################################
+# Users service
+##################################################################################################
+apiVersion: v1
+kind: Service
+metadata:
+  name: user
+  labels:
+    app: user
+    service: user
+spec:
+  ports:
+    - port: 8080
+      name: http-web
+  selector:
+    app: user
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: myapp-user
+  labels:
+    account: user
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-v1
+  labels:
+    app: user
+    version: v1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: user
+      version: v1
+  template:
+    metadata:
+      annotations:
+        sidecar.istio.io/inject: "false"
+      labels:
+        app: user
+        version: v1
+    spec:
+      serviceAccountName: myapp-user
+      containers:
+      - name: user
+        image: mohinigonawala90/user:dev
+        imagePullPolicy: Always
+        env:
+          - name: AWS_PROFILE
+            valueFrom:
+              configMapKeyRef:
+                key: AWS_PROFILE
+                name: env-config
+          - name: AWS_REGION
+            valueFrom:
+              configMapKeyRef:
+                key: AWS_REGION
+                name: env-config
+          - name: AWS_BUCKET
+            valueFrom:
+              configMapKeyRef:
+                key: AWS_BUCKET
+                name: env-config
+          - name: PORT
+            valueFrom:
+              configMapKeyRef:
+                name: env-config
+                key: USER_PORT
+          - name: JWT_SECRET
+            valueFrom:
+              configMapKeyRef:
+                name: env-config
+                key: JWT_SECRET
+          - name: POSTGRESS_DB
+            valueFrom:
+              configMapKeyRef:
+                name: env-config
+                key: POSTGRESS_DB
+          - name: SHOPPING_DB
+            valueFrom:
+              configMapKeyRef:
+                name: env-config
+                key: SHOPPING_DB
+          - name: POSTGRESS_HOST
+            valueFrom:
+              configMapKeyRef:
+                name: env-config
+                key: POSTGRESS_HOST
+          - name: POSTGRESS_PASSWORD
+            value: password
+          - name: POSTGRESS_USERNAME
+            value: master
+        livenessProbe:
+          httpGet:
+            path: /api/v0/users/healthz
+            port: 8080
+          initialDelaySeconds: 120
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /api/v0/users/healthz
+            port: 8080
+          initialDelaySeconds: 120
+          periodSeconds: 0
+        volumeMounts:
+          - name: aws-secret
+            mountPath: "/root/.aws/"
+            readOnly: true
+      volumes:
+        - name: aws-secret
+          secret:
+            secretName: aws-secret
+---
+##################################################################################################
+# Item service
+##################################################################################################
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: item
+  labels:
+    app: item
+    service: item
+spec:
+  ports:
+    - port: 8080
+      name: http-web
+  selector:
+    app: item
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: myapp-item
+  labels:
+    account: item
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: item-v1
+  labels:
+    app: item
+    version: v1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: item
+      version: v1
+  template:
+    metadata:
+      annotations:
+        sidecar.istio.io/inject: "false"
+      labels:
+        app: item
+        version: v1
+    spec:
+      serviceAccountName: myapp-item
+      containers:
+        - image: mohinigonawala90/item:dev
+          name: item
+          imagePullPolicy: Always
+          env:
+            - name: AWS_PROFILE
+              valueFrom:
+                configMapKeyRef:
+                  key: AWS_PROFILE
+                  name: env-config
+            - name: AWS_REGION
+              valueFrom:
+                configMapKeyRef:
+                  key: AWS_REGION
+                  name: env-config
+            - name: AWS_BUCKET
+              valueFrom:
+                configMapKeyRef:
+                  key: AWS_BUCKET
+                  name: env-config
+            - name: PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: env-config
+                  key: ITEM_PORT
+            - name: JWT_SECRET
+              valueFrom:
+                configMapKeyRef:
+                  name: env-config
+                  key: JWT_SECRET
+            - name: POSTGRESS_DB
+              valueFrom:
+                configMapKeyRef:
+                  name: env-config
+                  key: POSTGRESS_DB
+            - name: SHOPPING_DB
+              valueFrom:
+                configMapKeyRef:
+                  name: env-config
+                  key: SHOPPING_DB
+            - name: POSTGRESS_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: env-config
+                  key: POSTGRESS_HOST
+            - name: POSTGRESS_PASSWORD
+              value: password
+            - name: POSTGRESS_USERNAME
+              value: master
+          livenessProbe:
+            httpGet:
+              path: /api/v0/products/healthz
+              port: 8080
+            initialDelaySeconds: 120
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /api/v0/products/healthz
+              port: 8080
+            initialDelaySeconds: 120
+            periodSeconds: 10
+          volumeMounts:
+            - name: aws-secret
+              mountPath: "/root/.aws/"
+              readOnly: true
+      volumes:
+        - name: aws-secret
+          secret:
+            secretName: aws-secret
+
+---
+############ Order Service
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: order
+  labels:
+    app: order
+    service: order
+spec:
+  ports:
+    - port: 8080
+      name: http-web
+  selector:
+    app: order
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: myapp-order
+  labels:
+    account: order
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: order-v1
+  labels:
+    app: order
+    version: v1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: order
+      version: v1
+  template:
+    metadata:
+      annotations:
+        sidecar.istio.io/inject: "false"
+      labels:
+        app: order
+        version: v1
+    spec:
+      serviceAccountName: myapp-order
+      containers:
+        - image: mohinigonawala90/order:dev
+          name: order
+          imagePullPolicy: Always
+          env:
+            - name: AWS_PROFILE
+              valueFrom:
+                configMapKeyRef:
+                  key: AWS_PROFILE
+                  name: env-config
+            - name: AWS_REGION
+              valueFrom:
+                configMapKeyRef:
+                  key: AWS_REGION
+                  name: env-config
+            - name: AWS_BUCKET
+              valueFrom:
+                configMapKeyRef:
+                  key: AWS_BUCKET
+                  name: env-config
+            - name: PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: env-config
+                  key: ORDER_PORT
+            - name: JWT_SECRET
+              valueFrom:
+                configMapKeyRef:
+                  name: env-config
+                  key: JWT_SECRET
+            - name: POSTGRESS_DB
+              valueFrom:
+                configMapKeyRef:
+                  name: env-config
+                  key: POSTGRESS_DB
+            - name: SHOPPING_DB
+              valueFrom:
+                configMapKeyRef:
+                  name: env-config
+                  key: SHOPPING_DB
+            - name: POSTGRESS_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: env-config
+                  key: POSTGRESS_HOST
+            - name: POSTGRESS_PASSWORD
+              value: password
+            - name: POSTGRESS_USERNAME
+              value: master
+            - name: PRODUCTS_SERVICE
+              valueFrom:
+                configMapKeyRef:
+                  key: PRODUCTS_SERVICE
+                  name: env-config
+            - name: USERS_SERVICE
+              valueFrom:
+                configMapKeyRef:
+                  key: USERS_SERVICE
+                  name: env-config
+          livenessProbe:
+            httpGet:
+              path: /api/v0/health
+              port: 8080
+            initialDelaySeconds: 120
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /api/v0/health
+              port: 8080
+            initialDelaySeconds: 120
+            periodSeconds: 10
+          volumeMounts:
+            - name: aws-secret
+              mountPath: "/root/.aws/"
+              readOnly: true
+      volumes:
+        - name: aws-secret
+          secret:
+            secretName: aws-secret

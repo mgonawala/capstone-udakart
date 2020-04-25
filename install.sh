@@ -1,16 +1,13 @@
 #!/bin/bash
 
-    docker build -t mohinigonawala90/backend-feed:latest udacity-c3-restapi-feed;
-    docker tag $DOCKER_USER/backend-feed:latest $DOCKER_USER/backend-feed:${TRAVIS_BUILD_NUMBER};
-    docker push $DOCKER_USER/backend-feed:${TRAVIS_BUILD_NUMBER};
-    docker push $DOCKER_USER/backend-feed:latest;
+    docker-compose -f deployment/docker/docker-compose.yaml build;
+    docker-compose -f deployment/docker/docker-compose.yaml push;
 
-    docker build -t mohinigonawala90/backend-user:latest udacity-c3-restapi-user;
-    docker tag $DOCKER_USER/backend-user:latest $DOCKER_USER/backend-user:${TRAVIS_BUILD_NUMBER};
-    docker push $DOCKER_USER/backend-user:${TRAVIS_BUILD_NUMBER};
-    docker push $DOCKER_USER/backend-user:latest;
+    docker tag mohinigonawala90/user:dev mohinigonawala90/user:${TRAVIS_BUILD_NUMBER};
+    docker push $DOCKER_USER/user:${TRAVIS_BUILD_NUMBER};
 
-    docker build -t mohinigonawala90/frontend:latest udacity-c3-frontend;
-    docker tag $DOCKER_USER/frontend:latest $DOCKER_USER/frontend:${TRAVIS_BUILD_NUMBER};
-    docker push $DOCKER_USER/frontend:${TRAVIS_BUILD_NUMBER};
-    docker push $DOCKER_USER/frontend:latest;
+    docker tag mohinigonawala90/item:dev mohinigonawala90/item:${TRAVIS_BUILD_NUMBER};
+    docker push $DOCKER_USER/item:${TRAVIS_BUILD_NUMBER};
+
+    docker tag mohinigonawala90/order:dev mohinigonawala90/order:${TRAVIS_BUILD_NUMBER};
+    docker push $DOCKER_USER/order:${TRAVIS_BUILD_NUMBER};
