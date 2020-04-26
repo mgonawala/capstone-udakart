@@ -18,8 +18,15 @@ services:
     volumes:
       - $HOME/.aws:/root/.aws
     env_file:
-      - ../../item-service/.env
+      - .env
 
+  client:
+    build:
+      context: ../../client
+      dockerfile: Dockerfile-local
+    image: mohinigonawala90/client:dev
+    ports:
+      - "3000:80"
 
 
   user:
@@ -29,7 +36,7 @@ services:
     volumes:
       - $HOME/.aws:/root/.aws
     env_file:
-      - ../../user-service/.env
+      - .env
 
   order:
     build:
@@ -38,4 +45,4 @@ services:
     volumes:
       - $HOME/.aws:/root/.aws
     env_file:
-      - ../../order-service/.env
+      - .env
