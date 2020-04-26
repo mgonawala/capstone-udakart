@@ -1,25 +1,35 @@
-# Udagram Microservices
+# Udakart - Capston project
 
-![Build Status](https://travis-ci.com/mgonawala/udagram-microservices.svg?branch=feature-travis-ci)
+![Build Status](https://travis-ci.com/mgonawala/capstone-udakart.svg?branch=master)
 
 This project is a part of Udacity Cloud Developer nanodegree.
 Main goal is to learn how to divide a monolith application into microservices.
 
-Here, Monolith application has been divided into three separate services.
-1.  Frontend (Iconic APP)
-2.  Feed microservice (Node.js)
-3.  User microservice (Node.js)
+Project is a simple Shopping Cart application that is built with Microservices architecture.
+
+**Microservices**:
+
+1.  User Service: This service handles User login & signup features.
+2.  Product Service: This service maintains a catalogue of all the products available for purchase.
+3.  Order Service: This service handles Order creation & provides features to get order history of a user.
+
+**Client**:
+
+Client application a React App that consumes above Microservices &
+provides an interface for user to a make purchase.
+
 
 #### Goals
 
 1.  Application should allow users to signup and login via a web client.
-2.  It should allow users to create a feed, whose details will be stored in postgress on AWS.
-3.  User should be able to upload images, which will be stored on AWS S3.
-4.  User should be able to view all the feeds along with their images.
-5.  Each service should be containerized and deployed in a Kubernetes cluster.
-6.  Each service should be able to scale out and scale in independently.
-7.  Application should have integrated CI/CD process.
-8.  Application should support A/B deployment strategy.
+2.  It should allow users to add item into the shopping cart.
+3.  It should allow users to place an order.
+4.  It should allow users to find  their order history.
+5.  It should allow an admin user to add a new Item or update an existing item.
+6.  It should allow an admin user to upload an image of the product into AWS s3 bucket.
+7.  Each service should be containerized and deployed in a Kubernetes cluster.
+8.  Each service should be able to scale out and scale in independently.
+9.  Application should have integrated CI/CD process.
 
 ## Getting Started
 
@@ -38,8 +48,6 @@ These instructions will help you set up a copy of the project and run it on loca
     [Eksctl](https://docs.aws.amazon.com/eks/latest/userguide/getting-started.html)
   
     [Kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/)
- 
-    [Istio]()
 
 
 ### Instalation & setup
@@ -52,8 +60,8 @@ git clone https://github.com/mgonawala/udagram-microservices.git
 
 * Build docker images for each service
 ```
-cd udacity-c3-deployment/docker
-docker-compose -f docker-compose-build.yaml build
+cd deployment/docker
+docker-compose -f docker-compose.yaml build
 ```
 
 * Check docker images on local docker registry after successful build.
@@ -61,9 +69,11 @@ docker-compose -f docker-compose-build.yaml build
 ````
 docker images
 ````
-![docker-images](Screenshots/docker-images.png)
+![docker-images](screenshots/docker-images.png)
 
 * Set Environment variables
+
+create a .env file & set environment variables
 
 ````
 POSTGRESS_USERNAME: "your_username"
@@ -74,9 +84,11 @@ AWS_REGION: "your_aws_region"
 AWS_PROFILE: "your_profile" 
 AWS_BUCKET: "your_bucket"
 JWT_SECRET: "any_long_secret_key"
+USERS_SERVICE: user:8080
+PRODUCTS_SERVICE: item:8080
 ````
 
-* Run whole application
+* Run whole application locally
 
 ````
 docker-compose up
@@ -85,29 +97,27 @@ docker-compose up
 * Check if you application is running
 
 ```
-curl http://localhost:8100/api/v0/feed
+Backend:
+curl http://localhost:8085/api/v0/products
+
 ```
 
-* Go to localhost:8100 in browser and see if it is working as per below.
+* Go to localhost:3000 in browser and see if it is working as per below.
 
-  ![local-sit](Screenshots/local-site.png)
+  ![local-sit](screenshots/loalhost-app.png)
   
 * push docker images to docker hub registry
 
 ```
 docker login -u username -p password
-docker push your_docker_username/imagename:tag
+docker-compose push
 ```
 
 * Check your docker images in docker hub registry
 
-![docker-images](Screenshots/docker-hub.png)
+![docker-images](screenshots/docker-hub-images.png)
 
 ## Deploy application on Local cluster using Minikube
-
-* Follow this link to setup a local cluster using Minikube [link](https://kubernetes.io/docs/setup/learning-environment/minikube/#minikube-features)
-
-* Install istio  `` sh setup-istio.sh``
 
 * Edit aws-secret.yaml file with your base64 encoded ~/.aws/credentials file
 
@@ -135,43 +145,30 @@ kubectl apply -f udacity-c3-deployment/kubconfig/myapp-gateway.yaml
 kubectl get deployment
 ```
 
-![deployments](Screenshots/k8s-deployments.png)
+![deployments](screenshots/cluster-deployments.png)
 
 * check your services
 ```
 kubectl get svc
 ```
 
-![services](Screenshots/k8s-service.png)
+![services](screenshots/cluster-services.png)
 
-* Browse to ``http://localhost:8100/`` to check if your application is running.
+* Browse to ``http://localhost:3000/`` to check if your application is running.
 
-![local-site](Screenshots/local-site.png)
+![local-site](screenshots/loalhost-app.png)
 
 
 ## Rolling update
 
 This section demonstrates how to rollout update with little downtime.
-To update the deployed image of feed service, issue following command
+To update the deployed image of Item service, issue following command
 
-`Kubectl set image deployment/feed-v1 feed=mohinigonawala90/backend-feed:v2`
+`Kubectl set image deployment/item-v1 item=mohinigonawala90/item:3`
 
 `deployment.extensions/frontend image updated`
 
-![update](Screenshots/image-rollout.png)
-![update](Screenshots/image-rollout-2.png)
-
-
-
->_Here we have two versions of Feed service deployed.
-Traffic will be routed to specific feed service based on Header parameter **api-version**.
-**api-version** **v1.0.0** will be routed to feed-v1.
-**api-version** **v2.0.0** will be routed to feed-v2.
-If no header is provided, it defaults to feed-v1._ 
-
-
-![feed-v1](Screenshots/feed-v1.png)
-![feed-v2](Screenshots/feed-v2.png)
+![item-3](screenshots/rolling-update.png)
 
 
 ## CI/CD with travis CI
@@ -179,7 +176,8 @@ If no header is provided, it defaults to feed-v1._
 This application is configured with Travis CI for continuous Integration/continuous deployment.
 Each commit on the GitHUB will trigger a build & deploy to AWS EKS cluster.
 
-![travis](Screenshots/travis.png)
+![travis](screenshots/Travis.png)
+![travis](screenshots/Travis-deployment.png)
 
 ## To setup your own pipeline please follow below steps:
 
@@ -190,13 +188,26 @@ Each commit on the GitHUB will trigger a build & deploy to AWS EKS cluster.
 
 If you have a cloud cluster enabled, set below environment variables.
 
-5.  EKS_CA = `$(kubectl config view --flatten --output=json \
-                     | jq --raw-output '.clusters[0] .cluster ["certificate-authority-data"]')`
-6.  EKS_CLUSTER_HOST = `$(kubectl config view --flatten --output=json \
-                               | jq --raw-output '.clusters[0] .cluster ["server"]')`
+5.  EKS_CA = `$(kubectl config view --flatten --output=json | jq --raw-output '.clusters[0] .cluster ["certificate-authority-data"]')`
+6.  EKS_CLUSTER_HOST = `$(kubectl config view --flatten --output=json | jq --raw-output '.clusters[0] .cluster ["server"]')`
 7.  EKS_CLUSTER_NAME = Your_cluster_name
 8.  EKS_CLUSTER_USER_NAME = Your_cluster_user_name
 9.  TOKEN = `kubectl get secret "${SECRET_NAME}" --namespace "${NAMESPACE}" -o json | jq -r '.data["token"]' | base64 -D`
     SECRET will be your service-account-token
 10. Make sure your service account has roles attached to list, patch, udpate deployemnt.
 11. Run `kubctl udacity-d3-deployment/kubconfig/roleconfig.yaml` to set up roles.
+
+## AWS Deployed URL
+
+**Client**: http://a8c81b52714f9478894068a2ab01c580-1022098991.us-east-1.elb.amazonaws.com:3000/
+
+**Backend**: http://a8780c0375acc4b439cac40f783c3e62-111135518.us-east-1.elb.amazonaws.com/
+
+**User email**: hello@gmail.com
+
+**User Password**: fancypass
+
+
+**Admin email**: admin@gmail.com
+
+**Admin password**: admin

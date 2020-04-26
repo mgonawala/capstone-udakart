@@ -31,4 +31,4 @@ after_success:
   - sed -i -e 's|TOKEN|'"${TOKEN}"'|g' kubeconfig
   - kubectl --kubeconfig ${TRAVIS_BUILD_DIR}/kubeconfig set image deployment/item-v1 item=mohinigonawala90/item:${TRAVIS_BUILD_NUMBER}
   - kubectl --kubeconfig ${TRAVIS_BUILD_DIR}/kubeconfig set image deployment/order-v1 order=mohinigonawala90/order:${TRAVIS_BUILD_NUMBER}
-  - kubectl --kubeconfig ${TRAVIS_BUILD_DIR}/kubeconfig set image deployment/user user=mohinigonawala90/user:${TRAVIS_BUILD_NUMBER}
+  - kubectl --kubeconfig ${TRAVIS_BUILD_DIR}/kubeconfig set image deployment/user-v1 user=mohinigonawala90/user:${TRAVIS_BUILD_NUMBER}
