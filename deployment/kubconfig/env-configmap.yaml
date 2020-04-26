@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: ConfigMap
+data:
+  REACT_APP_USERS_SERVICE: "localhost:80"
+  REACT_APP_PRODUCTS_SERVICE: "localhost:80"
+  REACT_APP_ORDERS_SERVICE: "localhost:80"
+  CLIENT_PORT: "3000"
+  ITEM_PORT: "8080"
+  POSTGRESS_USERNAME: username
+  POSTGRESS_PASSWORD: password
+  POSTGRESS_HOST: host
+  AWS_PROFILE: us-east-1
+  AWS_BUCKET: bucketname
+  SHOPPING_DB: shopping_db
+  POSTGRESS_DB: shopping_db
+  AWS_REGION: us-east-1
+  JWT_SECRET: anylongstring
+  PRODUCTS_SERVICE: item:8080
+  USERS_SERVICE: user:8080
+  ORDER_PORT: "8080"
+  USER_PORT: "8080"
+metadata:
+  name: env-config
