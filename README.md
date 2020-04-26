@@ -1,6 +1,6 @@
 # Udakart - Capston project
 
-![Build Status](https://travis-ci.com/mgonawala/udagram-microservices.svg?branch=feature-travis-ci)
+![Build Status](https://travis-ci.com/mgonawala/capstone-udakart.svg?branch=master)
 
 This project is a part of Udacity Cloud Developer nanodegree.
 Main goal is to learn how to divide a monolith application into microservices.
