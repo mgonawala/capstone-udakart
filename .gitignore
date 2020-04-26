@@ -3,6 +3,10 @@ node_modules
 .idea/
 *.iml
 
+order-service/migrations/*
+order-service/config/*
+order-service/seeders/*
+
 secrets/*
 udacity-c3-deployment/kubconfig/aws-secret.yaml
 udacity-c3-deployment/kubconfig/env-configmap.yaml
@@ -14,3 +18,5 @@ cleanup
 /deployment/kubconfig/env-secret.yaml
 /item-service/www/controllers/v0/product/routes/product.router.js
 /item-service/www/controllers/v0/product/routes/product.router.js.map
+/order-service/www/src/controllers/v0/order/models/Order.js
+/order-service/www/

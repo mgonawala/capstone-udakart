@@ -6,7 +6,7 @@ import {createOrder} from "../lib/OrdersLib";
 
 export default function CartTotal(){
 
-    const {cartItems, setCartItems, authToken} = useAppContext();
+    const {cartItems, setCartItems, authToken, email} = useAppContext();
 
     function totalPrice(){
         return cartItems.reduce((total, item)=> total + (item.unitPrice * item.quantity),0);
@@ -14,7 +14,7 @@ export default function CartTotal(){
 
     async function placeOrder() {
         console.log('Placing order.')
-        const result = await createOrder(cartItems, setCartItems, authToken)
+        const result = await createOrder(cartItems, setCartItems, authToken, email)
         console.log(result);
         alert(result.message);
     }

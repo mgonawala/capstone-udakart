@@ -1,10 +1,35 @@
-import {Router, Response, Request, response} from 'express';
+import {Router, Response, Request, NextFunction} from 'express';
 import {ProductItem} from '../models/ProductItem';
 import {getGetSignedUrl, getPutSignedUrl} from '../../../../aws';
-
+import Axios from 'axios';
 
 const router: Router = Router();
 
+
+export async function requireAuth(req: Request, res: Response, next: NextFunction) {
+  try {
+    const result = await Axios({
+      method: 'get',
+      url: `http://${process.env.USERS_SERVICE}/api/v0/users/auth/verification`,
+      headers:
+          {
+            'Authorization': `${req.headers.authorization}`,
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+      validateStatus: (status) => {
+        return status < 600;
+      }
+    });
+    if (result.status !== 200) {
+      return res.status(result.status).send(result.data.message);
+    }
+    return next();
+  } catch (e) {
+    console.log('error:', e);
+    return res.status(500).send({message: e.message});
+  }
+}
 // Health Check endpoint
 router.get('/healthz', async (req: Request, res: Response) => {
   console.log('Health Check');
@@ -41,7 +66,7 @@ router.get('/:id', async (request: Request, response: Response) => {
 });
 
 // Delete a product item by ID
-router.delete('/:id', async (request: Request, response: Response) => {
+router.delete('/:id', requireAuth, async (request: Request, response: Response) => {
 
   const {id} = request.params;
 
@@ -58,10 +83,8 @@ router.delete('/:id', async (request: Request, response: Response) => {
 });
 
 // Update a Product Item by Id
-router.patch('/:id', async (request: Request, response: Response) => {
+router.patch('/:id', requireAuth,async (request: Request, response: Response) => {
   const {id} = request.params;
-  console.log('Id:', id);
-
   const item = await ProductItem.findByPk(id);
   if (!item) {
     response.status(404).send({
@@ -72,7 +95,6 @@ router.patch('/:id', async (request: Request, response: Response) => {
   const category = request.body.category;
   const quantity = request.body.quantity;
   const unitPrice = request.body.unitPrice;
-  console.log(quantity, 'quantity');
 
   if (name !== undefined) {
     item.name = name;
@@ -94,7 +116,7 @@ router.patch('/:id', async (request: Request, response: Response) => {
 });
 
 // Create a new Product Item
-router.post('/', async ( request: Request, response: Response) => {
+router.post('/', requireAuth, async ( request: Request, response: Response) => {
 
   const name = request.body.name;
   const category = request.body.category;
@@ -156,13 +178,11 @@ router.post('/', async ( request: Request, response: Response) => {
 
 
 // Get a signed url to put a new item in the bucket
-router.get('/signed-url/:fileName',
-    async (req: Request, res: Response) => {
+router.get('/signed-url/:fileName', requireAuth, async (req: Request, res: Response) => {
       const { fileName } = req.params;
       const url = getPutSignedUrl(fileName);
       res.status(201).send({url: url});
     });
-
 
 
 export const ProductRouter: Router = router;

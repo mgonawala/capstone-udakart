@@ -29,6 +29,6 @@ after_success:
   - sed -i -e 's|EKS_CLUSTER_NAME|'"${EKS_CLUSTER_NAME}"'|g' kubeconfig
   - sed -i -e 's|EKS_CLUSTER_USER_NAME|'"${EKS_CLUSTER_USER_NAME}"'|g' kubeconfig
   - sed -i -e 's|TOKEN|'"${TOKEN}"'|g' kubeconfig
-  - kubectl --kubeconfig ${TRAVIS_BUILD_DIR}/kubeconfig set image deployment/feed-v1 feed=mohinigonawala90/backend-feed:${TRAVIS_BUILD_NUMBER}
-  - kubectl --kubeconfig ${TRAVIS_BUILD_DIR}/kubeconfig set image deployment/user-v1 user=mohinigonawala90/backend-user:${TRAVIS_BUILD_NUMBER}
-  - kubectl --kubeconfig ${TRAVIS_BUILD_DIR}/kubeconfig set image deployment/frontend frontend=mohinigonawala90/frontend:${TRAVIS_BUILD_NUMBER}
+  - kubectl --kubeconfig ${TRAVIS_BUILD_DIR}/kubeconfig set image deployment/item-v1 item=mohinigonawala90/item:${TRAVIS_BUILD_NUMBER}
+  - kubectl --kubeconfig ${TRAVIS_BUILD_DIR}/kubeconfig set image deployment/order-v1 order=mohinigonawala90/order:${TRAVIS_BUILD_NUMBER}
+  - kubectl --kubeconfig ${TRAVIS_BUILD_DIR}/kubeconfig set image deployment/user user=mohinigonawala90/user:${TRAVIS_BUILD_NUMBER}

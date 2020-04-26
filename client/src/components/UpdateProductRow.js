@@ -42,12 +42,12 @@ export default function UpdateProductRow({item,index, updateProduct,deleteProduc
                     <FormControl type={"number"} value={fields.unitPrice} onChange={setFields} autoFocus />
                 </FormGroup>
             </td>
-            <td onClick={ (event) => updateProduct(item.id,fields.name,fields.quantity, fields.unitPrice,uploadedFile)}>
+            <td onClick={ (event) => updateProduct(item.id,fields.name,fields.quantity, fields.unitPrice,uploadedFile,authToken)}>
                 <a href="#" className="btn btn-info btn-lg">
                     <i className="fas fa-edit"></i>
                 </a>
             </td>
-            <td onClick={ (event) => deleteProduct(item.id)}><a href="#" className="btn btn-danger btn-lg">
+            <td onClick={ (event) => deleteProduct(item.id,authToken)}><a href="#" className="btn btn-danger btn-lg">
                 <i className="fas fa-trash"></i>
             </a></td>
         </tr>

@@ -8,6 +8,7 @@ export default function Navigation({  cartItems}) {
 
     const {isAuthenticated,userHasAuthenticated,setAuthToken, setCartItems, email} = useAppContext();
     const history = useHistory();
+    const isAdmin = email == 'admin@gmail.com' ? true: false
 
     async function handleLogout() {
         await userHasAuthenticated(false);
@@ -29,38 +30,56 @@ export default function Navigation({  cartItems}) {
           <ul className="navbar-nav mr-auto">
             {isAuthenticated?
             <>
-                <LinkContainer to={"/add-product"} >
-                    <li className="nav-item">
+
+              { isAdmin?
+
+                  <>
+                    <LinkContainer to={"/add-product"} >
+                      <li className="nav-item">
                         <a className="nav-link" href="/">Add Product</a>
-                    </li>
-                </LinkContainer>
-                <LinkContainer to={"/update-product"} >
-                    <li className="nav-item">
+                      </li>
+                    </LinkContainer>
+                    <LinkContainer to={"/update-product"} >
+                      <li className="nav-item">
                         <a className="nav-link" href="/">Update Product</a>
-                    </li>
-                </LinkContainer>
-              <LinkContainer to={"/"} >
-                <li className="nav-item">
-                  <a className="nav-link" href="/">Home</a>
-                </li>
-              </LinkContainer>
+                      </li>
+                    </LinkContainer>
+                  </>
+                  :
 
-                <li className="nav-item">
-                  <a className="nav-link" href="/" onClick={handleLogout}>Logout</a>
-                </li>
+                  <>
 
-              <LinkContainer to={"/cart"}>
-                <li className="nav-item">
+                    <LinkContainer to={"/"} >
+                      <li className="nav-item">
+                        <a className="nav-link" href="/">Home</a>
+                      </li>
+                    </LinkContainer>
 
-                    <a className="nav-link" href="/">
-                        Cart <span className="badge badge-success">{cartItems.length}</span>
-                    </a>
-                </li>
-              </LinkContainer>
+
+
+                    <LinkContainer to={"/cart"}>
+                      <li className="nav-item">
+
+                        <a className="nav-link" href="/">
+                          Cart <span className="badge badge-success">{cartItems.length}</span>
+                        </a>
+                      </li>
+                    </LinkContainer>
+
+                    <LinkContainer to={"/order-history"}>
+                      <li className="nav-item">
+                        <a className="nav-link" href="/">Orders</a>
+                      </li>
+                    </LinkContainer>
+                  </>
+              }
+
 
               <li className="nav-item">
-                  Hi ! {email}
+                <a className="nav-link" href="/" onClick={handleLogout}>Logout</a>
               </li>
+
+
             </>
             :
             <>
