@@ -168,18 +168,6 @@ To update the deployed image of Item service, issue following command
 
 `deployment.extensions/frontend image updated`
 
-![update](Screenshots/image-rollout.png)
-![update](Screenshots/image-rollout-2.png)
-
-
-
->_Here we have two versions of Feed service deployed.
-Traffic will be routed to specific feed service based on Header parameter **api-version**.
-**api-version** **v1.0.0** will be routed to feed-v1.
-**api-version** **v2.0.0** will be routed to feed-v2.
-If no header is provided, it defaults to feed-v1._ 
-
-
 ![item-3](screenshots/rolling-update.png)
 
 
@@ -189,6 +177,7 @@ This application is configured with Travis CI for continuous Integration/continu
 Each commit on the GitHUB will trigger a build & deploy to AWS EKS cluster.
 
 ![travis](screenshots/Travis.png)
+![travis](screenshots/Travis-deployment.png)
 
 ## To setup your own pipeline please follow below steps:
 
@@ -211,10 +200,14 @@ If you have a cloud cluster enabled, set below environment variables.
 ## AWS Deployed URL
 
 **Client**: http://a8c81b52714f9478894068a2ab01c580-1022098991.us-east-1.elb.amazonaws.com:3000/
+
 **Backend**: http://a8780c0375acc4b439cac40f783c3e62-111135518.us-east-1.elb.amazonaws.com/
 
-User email: hello@gmail.com
-User Password: fancypass
+**User email**: hello@gmail.com
 
-Admin email: admin@gmail.com
-Admin password: admin
+**User Password**: fancypass
+
+
+**Admin email**: admin@gmail.com
+
+**Admin password**: admin
