@@ -119,6 +119,10 @@ docker-compose push
 
 ## Deploy application on Local cluster using Minikube
 
+* Follow this link to setup a local cluster using Minikube link
+
+* Install istio sh setup-istio.sh
+
 * Edit aws-secret.yaml file with your base64 encoded ~/.aws/credentials file
 
 `cat ~/.aws/credentials | base64 `
