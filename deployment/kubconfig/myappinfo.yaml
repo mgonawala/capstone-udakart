@@ -47,7 +47,7 @@ spec:
       serviceAccountName: myapp-user
       containers:
       - name: user
-        image: mohinigonawala90/user:dev
+        image: mohinigonawala90/user:9
         imagePullPolicy: Always
         env:
           - name: AWS_PROFILE
@@ -163,7 +163,7 @@ spec:
     spec:
       serviceAccountName: myapp-item
       containers:
-        - image: mohinigonawala90/item:dev
+        - image: mohinigonawala90/item:9
           name: item
           imagePullPolicy: Always
           env:
@@ -207,6 +207,11 @@ spec:
                 configMapKeyRef:
                   name: env-config
                   key: POSTGRESS_HOST
+            - name: USERS_SERVICE
+              valueFrom:
+                configMapKeyRef:
+                  key: USERS_SERVICE
+                  name: env-config
             - name: POSTGRESS_PASSWORD
               value: password
             - name: POSTGRESS_USERNAME
@@ -279,7 +284,7 @@ spec:
     spec:
       serviceAccountName: myapp-order
       containers:
-        - image: mohinigonawala90/order:dev
+        - image: mohinigonawala90/order:9
           name: order
           imagePullPolicy: Always
           env:
