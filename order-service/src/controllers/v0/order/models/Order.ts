@@ -5,7 +5,7 @@ import {OrderItem} from "./OrderItem";
 export class Order extends Model<Order> {
 
   @Column
-  public buyer_id: number;
+  public buyer_id: string;
 
   @Column
   public address: string;

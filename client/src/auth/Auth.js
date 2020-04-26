@@ -28,7 +28,11 @@ const VERIFY_API = `http://${USERS_SERVICE}/api/v0/users/auth/verification`;
          }
        });
 
-       return response.data.token;
+       {/*return response.data.token;*/}
+       return {
+         token: response.data.token,
+         email: response.data.user.email
+       }
      }
      catch (e) {
        return undefined;

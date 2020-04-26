@@ -1,7 +1,7 @@
 #!/bin/bash
 
-    docker-compose -f deployment/docker/docker-compose.yaml build;
-    docker-compose -f deployment/docker/docker-compose.yaml push;
+    docker-compose -f deployment/docker/docker-compose-travis.yaml build;
+    docker-compose -f deployment/docker/docker-compose-travis.yaml push;
 
     docker tag mohinigonawala90/user:dev mohinigonawala90/user:${TRAVIS_BUILD_NUMBER};
     docker push $DOCKER_USER/user:${TRAVIS_BUILD_NUMBER};

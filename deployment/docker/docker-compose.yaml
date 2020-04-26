@@ -5,13 +5,13 @@ services:
       context: .
     image: mohinigonawala90/proxy:dev
     depends_on:
-      - product
+      - item
       - order
       - user
     ports:
       - 8085:8080
 
-  product:
+  item:
     build:
       context: ../../item-service
     image: mohinigonawala90/item:dev
@@ -30,16 +30,6 @@ services:
       - $HOME/.aws:/root/.aws
     env_file:
       - ../../user-service/.env
-
-  client:
-    build:
-      context: ../../client
-      args:
-        - REACT_APP_USERS_SERVICE="localhost:80"
-        - REACT_APP_PRODUCTS_SERVICE="localhost:80"
-    image: mohinigonawala90/client:dev
-    ports:
-      - "3000:80"
 
   order:
     build:

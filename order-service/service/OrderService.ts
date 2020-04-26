@@ -3,11 +3,11 @@ import {getProductDetails} from './ProductService';
 import {ProductItem} from '../response/ProductItem';
 
 
-export async function validateOrder(createOrderRequest: CreateOrderRequest) {
+export async function validateOrder(createOrderRequest: CreateOrderRequest, authHeader: string) {
     // get product details from product service
     const validProducts = [];
     for ( const product of createOrderRequest.products) {
-        const productDetails = await getProductDetails(product.product_id) as ProductItem;
+        const productDetails = await getProductDetails(product.product_id, authHeader) as ProductItem;
         // check quantity of product
         console.log(productDetails, 'product details', product.quantity, 'quantity');
         if ( productDetails.quantity < product.quantity) {

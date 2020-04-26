@@ -5,18 +5,25 @@ export  class OrderAccess {
   constructor(){
   }
 
-  async getAllOrdersByBuyerId(buyerId: number) : Promise<Order[]>{
+  async getAllOrdersByBuyerId(buyerId: string) : Promise<Order[]>{
 
-    const orders = await Order.findAll({
-      where: {
-        buyer_id: buyerId
+    try {
+      const orders = await Order.findAll({
+        where: {
+          buyer_id: buyerId
+        }
+      });
+      console.log(`Orders of buyer ${buyerId}: ${orders.length}`);
+      if (orders.length !== 0) {
+        console.log('Found orders:', orders.length);
       }
-    });
-
-    if( orders.length !== 0 ){
-      console.log('Found orders:', orders.length);
+      return orders;
     }
-   return orders;
+    catch (error) {
+      console.log('Could not fetch orders.', error);
+      return [];
+    }
+    return [];
   }
 
   async getAllOrders() : Promise<Order[]>{

@@ -12,7 +12,7 @@ export default function Login() {
 
   const history = useHistory();
   const [isLoading, setIsLoading] = useState(false);
-  const {userHasAuthenticated, setAuthToken} = useAppContext();
+  const {userHasAuthenticated, setAuthToken, setEmail} = useAppContext();
   const [fields, setField] = useFormFields({
     email: '',
     password: ''
@@ -28,16 +28,19 @@ export default function Login() {
     event.preventDefault();
     setIsLoading(true);
 
-    const token = await login(fields.email,fields.password);
-    if(token == undefined){
+    {/*const token = await login(fields.email,fields.password);*/}
+    const result = await login(fields.email,fields.password);
+    if(result == undefined){
       userHasAuthenticated(false);
       alert('Login Unsuccessful');
       setIsLoading(false);
     }
     else {
       userHasAuthenticated(true)
-      setAuthToken(token);
-      localStorage.setItem('authToken',token);
+      setAuthToken(result.token);
+      setEmail(result.email)
+      localStorage.setItem('authToken',result.token);
+      localStorage.setItem('email',result.email);
       history.push('/');
     }
   }

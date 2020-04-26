@@ -1,7 +1,7 @@
 import React from 'react';
 import {LinkContainer} from 'react-router-bootstrap';
 
-export default function Card({id,imageUrl, name, category, unitPrice, addToCart, quantity}) {
+export default function Card({id,imageUrl, name, category, unitPrice, addToCart, quantity, isAdmin}) {
   return(
       <div className={"col-sm-3"}>
       <div className="card h-75" >
@@ -16,9 +16,10 @@ export default function Card({id,imageUrl, name, category, unitPrice, addToCart,
               </p>
           </div>
           <div className="card-img-overlay">
-              { quantity>0 &&
+
+              { quantity>0 &&  !isAdmin &&
               <a href="#" className="btn btn-primary" onClick={() => addToCart({id,name,unitPrice, imageUrl})}>Add To Cart</a> }
-              { quantity <=0 &&
+              { quantity <=0 && !isAdmin &&
               <a href="#" className="btn btn-primary disabled" onClick={() => addToCart({id,name,unitPrice, imageUrl})}>Add To Cart</a> }
           </div>
       </div>

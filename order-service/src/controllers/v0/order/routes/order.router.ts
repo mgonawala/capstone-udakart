@@ -14,12 +14,8 @@ const c = config.dev;
 const router: Router = Router();
 const orderAccess: OrderAccess = new OrderAccess();
 
+// Check if token is JWT token is valid or not
 export async function requireAuth(req: Request, res: Response, next: NextFunction) {
-
-    // TODO change url to backend-user in environment file
-    // http://backend-user:8080/api/v0/users/auth/verification
-  console.log(`http://${process.env.USERS_SERVICE}/api/v0/users/auth/verification`);
-  console.log(req.headers.authorization);
 
   try {
     const result = await Axios({
@@ -44,27 +40,9 @@ export async function requireAuth(req: Request, res: Response, next: NextFunctio
     console.log('error:', e);
     return res.status(500).send({message: e.message});
   }
-/*
-    await Axios.get(`http://${c.users_api_host}/api/v0/users/auth/verification`, {
-      headers: {
-        'Authorization': req.headers.authorization
-      },
-      validateStatus: status1 => {
-        return status1 < 600;
-      }
-    }).then(response => {
-      console.log('data:', response.status);
-      if ( response.status !== 200) {
-        return res.status(response.status).send(response.data.message);
-      }
-      return next();
-    })
-  .catch(error => {
-    console.log('error:' + error);
-    return res.status(500).send({message: error.message});
-  });*/
 }
 
+// Health check endpoint
 router.get('/healthz', async (req: Request, res: Response) => {
   console.log('Health Check');
   res.status(200).send('OK');
@@ -74,18 +52,15 @@ router.get('/healthz', async (req: Request, res: Response) => {
 router.get('/',
     requireAuth,
     async (request: Request, response: Response) => {
-
-  console.log('Get all prders.');
-
-  const items = await orderAccess.getAllOrders();
-  response.status(200).send({
-    items: items
-  });
+    const items = await orderAccess.getAllOrders();
+    response.status(200).send({
+      items: items
+    });
 
 });
 
 // Retrieve all orders of a buyer
-router.get('/:id',
+router.get('/users/:id',
     requireAuth,
     async (request: Request, response: Response) => {
   const {id} = request.params;
@@ -131,7 +106,7 @@ router.post('/',
     total = price + total;
   });
 
-  const result = await validateOrder(createOrderRequest);
+  const result = await validateOrder(createOrderRequest, request.headers.authorization);
   console.log(result, 'result');
   if ( result.status === true) {
     const order = await Order.create({
@@ -143,7 +118,7 @@ router.post('/',
     }, {
       include: [OrderItem]
     });
-    await updateInventory(result.items);
+    await updateInventory(result.items, request.headers.authorization);
     response.status(201).send({
       order
     });

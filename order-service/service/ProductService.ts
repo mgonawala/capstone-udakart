@@ -4,7 +4,7 @@ import {ProductItem} from '../response/ProductItem';
 
 const PRODUCTS_API = process.env.PRODUCTS_SERVICE;
 
-export async function updateInventory(orderItems: ProductItem[]) {
+export async function updateInventory(orderItems: ProductItem[], authHeader: string) {
     for ( const orderItem of orderItems) {
         try {
             let product: ProductItem;
@@ -15,7 +15,9 @@ export async function updateInventory(orderItems: ProductItem[]) {
                 },
                 url: 'http://' + PRODUCTS_API + '/api/v0/products/' + orderItem.product_id,
                 headers: {
-                    'Accept': 'application/json'
+                    'Accept': 'application/json',
+                    'Authorization': authHeader,
+                    'Content-Type': 'application/json'
                 }
             });
         } catch (err) {
@@ -25,7 +27,7 @@ export async function updateInventory(orderItems: ProductItem[]) {
 
 }
 
-export  async function getProductDetails( id: string): Promise<ProductItem> {
+export  async function getProductDetails( id: string, authHeader: string): Promise<ProductItem> {
     console.log('get Productdetails', PRODUCTS_API)
     try {
         let product: ProductItem;
@@ -33,7 +35,9 @@ export  async function getProductDetails( id: string): Promise<ProductItem> {
             method: 'get',
             url: 'http://' + PRODUCTS_API + '/api/v0/products/' + id,
             headers: {
-                'Accept': 'application/json'
+                'Accept': 'application/json',
+                'Authorization': authHeader,
+                'Content-Type': 'application/json'
             }
         });
         if ( result.data !== undefined) {

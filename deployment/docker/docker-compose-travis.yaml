@@ -1,0 +1,16 @@
+version: "3.3"
+services:
+  item:
+    build:
+      context: ../../item-service
+    image: mohinigonawala90/item:dev
+
+  user:
+    build:
+      context: ../../user-service
+    image: mohinigonawala90/user:dev
+
+  order:
+    build:
+      context: ../../order-service
+    image: mohinigonawala90/order:dev

@@ -11,8 +11,8 @@ export default function Home({isAuthenticated}){
 
 
   const [products, setProducts] = useState([]);
-  const {cartItems, setCartItems} = useAppContext();
-
+  const {cartItems, setCartItems, email} = useAppContext();
+  const isAdmin = email == 'admin@gmail.com' ? true : false
   useEffect(() => {
     onLoad()
   }, [])
@@ -68,7 +68,7 @@ export default function Home({isAuthenticated}){
 
           { products!=null && products.map( product =>
             <Card id={ product.id} name={product.name} unitPrice={product.unitPrice} key={product.id} imageUrl={product.imageUrl}
-            addToCart={addToCart} quantity={product.quantity}/>
+            addToCart={addToCart} quantity={product.quantity} isAdmin={isAdmin}/>
           )}
         </div>
         </div>
