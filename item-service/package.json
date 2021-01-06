@@ -36,7 +36,7 @@
     "@types/node": "^11.11.6",
     "@types/sequelize": "^4.27.44",
     "@types/validator": "^10.9.0",
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "chai": "^4.2.0",
     "chai-http": "^4.2.1",
     "mocha": "^6.1.4",
